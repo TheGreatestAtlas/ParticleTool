@@ -52,7 +52,7 @@ Pakiet składa się z dwóch programów:<br>
 → Particle2MyAod.exe<br>
 → MyAod2Particle.exe<br>
 
-Programy, a dokładnie funkcje eksportu i powrotnego importu były testowane na:
+Programy, a dokładnie funkcje eksportu i powrotnego importu były testowane na:<br>
 → 1595 plikach .msh z KnightShift (czyli wszystkich) – wynik testu: 100%,<br>
 → 3701 plikach .msh z KnightShift II Curse of Souls (czyli wszystkich) – wynik testu: 100%,<br>
 → 584 plikach .msh z Earth 2150: Escape from the Blue Planet, Earth 2150: The Moon Project, Earth 2150: Lost Souls (czyli wszystkich) – wynik testu: 100%,<br>

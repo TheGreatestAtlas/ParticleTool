@@ -1,7 +1,7 @@
 # ParticleTool
 **Particle Tool By Atlas and ImBee**
 
-Particle Tool By Atlas and ImBee is a package of two programs used to convert particle files from Reality Pump games in order to enable easier editing and running of the same particle in different games from this studio. This package of programs is a “bridge” between different particle formats. These programs support the following games/titles:
+Particle Tool By Atlas and ImBee is a package of two programs used to convert particle files from Reality Pump games in order to enable easier editing and running of the same particle in different games from this studio. This package of programs is a “bridge” between different particle formats. These programs support the following games/titles:<br>
 → Earth 2150: Escape from the Blue Planet,<br>
 → Earth 2150: The Moon Project,<br>
 → Earth 2150: Lost Souls,<br>

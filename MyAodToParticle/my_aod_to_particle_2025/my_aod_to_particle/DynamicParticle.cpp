@@ -77,11 +77,11 @@ void DynamicParticleClass::InitializeHashMaps()
 
 
 DynamicParticleClass::DynamicParticleClass(ParticleFileVersionInfo arg_prt_file_version_info,
-										   string arg_input_directory_name,
+										   fs::path arg_input_directory_path,
 										   vector<char> arg_clean_file_buffer) :
 	
 	m_prt_file_version_info(arg_prt_file_version_info),
-	m_input_directory_name(arg_input_directory_name)
+	m_input_directory_path(arg_input_directory_path)
 {
 	if (arg_clean_file_buffer.empty() == false)
 	{
@@ -143,8 +143,8 @@ void DynamicParticleClass::GetTime(DynamicParticleData& arg_dynamic_particle_dat
 		DEBUG_PRINT(to_string(help_time_2).c_str());
 		DEBUG_PRINT("\n");
 
-		arg_dynamic_particle_data.time[0] = static_cast<int64_t>( help_time_1 * 1000.0 );
-		arg_dynamic_particle_data.time[1] = static_cast<int64_t>( (1.0 - help_time_2) * 1000.0 );
+		arg_dynamic_particle_data.time[0] = static_cast<float>(static_cast<int64_t>( help_time_1 * 1000.0 ));
+		arg_dynamic_particle_data.time[1] = static_cast<float>(static_cast<int64_t>( (1.0 - help_time_2) * 1000.0 ));
 
 	}
 
@@ -332,12 +332,12 @@ void DynamicParticleClass::WriteDynamicParticleDataToFileBuffer(vector<char>& ou
 	// Rekurencyjne wczytywanie dzieci
 	for (uint32_t i = 0; i < arg_dynamic_particle_data.number_of_nested_particles; ++i)
 	{
-		string child_extra_data_file_name = m_input_directory_name + "\\" + arg_dynamic_particle_data.children[i].m_obj_name + "_extra_data.cpp";
+		string child_extra_data_file_path = (m_input_directory_path / (arg_dynamic_particle_data.children[i].m_obj_name + "_extra_data.cpp")).string();
 
 		//cout << child_extra_data_file_name << endl;
 
 
-		IntroductionHeaderClass my_introduction_header(m_prt_file_version_info, child_extra_data_file_name, cout);
+		IntroductionHeaderClass my_introduction_header(m_prt_file_version_info, child_extra_data_file_path, cout);
 		my_introduction_header.GetAndWriteToFile(output_file_buff, true);
 
 		WriteDynamicParticleDataToFileBuffer(output_file_buff, arg_dynamic_particle_data.children[i]);

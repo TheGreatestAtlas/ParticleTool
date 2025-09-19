@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -10,6 +11,8 @@
 #include <Windows.h>
 
 using namespace std;
+
+namespace fs = filesystem;
 
 #ifdef _DEBUG
     #define DEBUG_PRINT(x) printf_s("%s",x)
@@ -1412,7 +1415,7 @@ class IntroductionHeaderClass
 {
 public:
     IntroductionHeaderClass(ParticleFileVersionInfo arg_prt_file_version_info = ParticleFileVersionInfo(),
-                            string arg_extra_data_file_name = string(),
+                            string arg_extra_data_file_path = string(),
                             ostream& arg_o = cout);
 
     void GetAndWriteToFile(vector<char>& output_file_buff, bool is_child = false);
@@ -1427,7 +1430,7 @@ private:
 
     ostream& m_o;
 
-    string m_extra_data_file_name;
+    string m_extra_data_file_path;
 
     ParticleFileVersionInfo m_prt_file_version_info = {};
 };
@@ -1505,7 +1508,7 @@ class DynamicParticleClass
 {
 public:
     DynamicParticleClass(ParticleFileVersionInfo arg_prt_file_version_info = ParticleFileVersionInfo(),
-                         string arg_input_directory_name = string(),
+                         fs::path arg_input_directory_path = fs::path(),
                          vector<char> arg_clean_file_buffer = {});
 
     void GetFromFile(string& arg_line);
@@ -1534,7 +1537,7 @@ private:
     unordered_map<string, uint32_t> m_list_of_type_consts = {};
     unordered_map<string, uint32_t> m_list_of_lighttype_consts = {};
 
-    string m_input_directory_name;
+    fs::path m_input_directory_path;
 
     stringstream m_dynamic_particle_file_stream;
 };
@@ -1772,7 +1775,7 @@ class AodCompilator
 {
 public:
 	// metody:
-	AodCompilator(string arg_input_directory_name = string(), ostream& arg_o = cout);
+	AodCompilator(fs::path& arg_input_directory_path, ostream& arg_o = cout);
 
 	void CompileTxtFileToBinBuffer();
 
@@ -1787,8 +1790,9 @@ private:
     WholeParticleEmiterContainer m_whole_particle_emiter_container = {};
     WholeDynamicParticleContainer m_whole_dynamic_particle_container = {};
 
-    string m_input_directory_name;
-    string m_extra_data_file_name;
+    fs::path& m_input_directory_path;
+
+    string m_extra_data_file_path;
 
     string m_compilator_flags_cfg_file_path;
 
@@ -1903,12 +1907,12 @@ private:
     istream& m_in_stream;
     ostream& m_o;
 
-    string m_input_directory_name;
+    fs::path m_input_directory_path;
 
     //Metody:
     void ShowStartScreen();
     void StandardProgramExecution();
 
-    string CreateOutputFileName(const particle_type_value& version) const;
+    string CreateOutputFileName(const particle_type_value& version);
 
 };

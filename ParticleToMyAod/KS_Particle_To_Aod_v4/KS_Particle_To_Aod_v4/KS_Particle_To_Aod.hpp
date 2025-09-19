@@ -16,6 +16,8 @@ using namespace std;
     #define DEBUG_PRINT(x)
 #endif
 
+namespace fs = filesystem;
+
 constexpr uint32_t locked_linked_min_max = 1;
 constexpr uint32_t unlocked_linked_min_max = 0;
 
@@ -1288,13 +1290,13 @@ public:
     void GetAndSetAndWriteDynamicParticleToAod(uint8_t* buffer,
         size_t& offset, stringstream& output, string& particle_name);
 
-    void SetParticleDirectoryName(string arg_name);
+    void SetParticleDirectoryPath(fs::path& arg_pth);
 
-    string GetParticleDirectoryName() const;
+    fs::path GetParticleDirectoryPath() const;
 
 private:
     //Pola:
-    string m_particle_directory_name;
+    fs::path m_particle_directory_path;
 
     DynamicParticleData m_private_dynamic_particle_data = {};
 
@@ -1507,6 +1509,10 @@ public:
     ParticleDecompiler(istream& argin, ostream& argo, int my_argc, char* my_argv[]);
 
 private:
+    fs::path m_input_path;
+    fs::path m_particle_directory_path;
+    fs::path m_program_parent_path;
+
     constexpr const unsigned int static c_correct_number_of_args = 2;
 
     constexpr const unsigned int static c_number_of_args_with_force_format = 4;
@@ -1525,11 +1531,11 @@ private:
 
     //output file
     stringstream m_output_stream;
-    string m_output_name;
+    string m_output_file_path;
 
     //additional data file
     stringstream m_bonus_file_stream;
-    string m_bonus_file_name;
+    string m_bonus_file_path;
 
     //iloœæ obiektów w pliku
     uint32_t m_number_of_emiters;

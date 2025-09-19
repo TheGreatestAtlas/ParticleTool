@@ -16,27 +16,29 @@ void ParticleCompilerApp::StandardProgramExecution()
 	//MAIN MENU
 	ShowStartScreen();
 	m_o << "Specify the name of the input directory:" << std::endl;
-	m_in_stream >> m_input_directory_name;
+	m_in_stream >> this->m_input_directory_path;
 
 }
 
-string ParticleCompilerApp::CreateOutputFileName(const particle_type_value& version) const
+string ParticleCompilerApp::CreateOutputFileName(const particle_type_value& version)
 {
+	string dir_name = this->m_input_directory_path.stem().string();
+
 	switch (version)
 	{
 	case dynamic_particle:
 	case ks_particles_emiter:
-		return m_input_directory_name + ".msh";
+		return (this->m_input_directory_path.parent_path() / (dir_name + ".msh" )).string();
 	break;
 
 	case e2160_particle:
 	case two_worlds_particle:
 	case particle_gen_particle:
-		return m_input_directory_name + ".prt";
+		return (this->m_input_directory_path.parent_path() / (dir_name + ".prt")).string();
 	break;
 
 	case not_particle:
-		return m_input_directory_name + ".error";
+		return (this->m_input_directory_path.parent_path() / (dir_name + ".error")).string();
 	break;
 
 	default: 
@@ -51,25 +53,25 @@ string ParticleCompilerApp::CreateOutputFileName(const particle_type_value& vers
 ParticleCompilerApp::ParticleCompilerApp(istream& argin, ostream& argo, int my_argc, char* my_argv[]) :
 										m_in_stream(argin), m_o(argo),
 
-	m_input_directory_name(string())
+	m_input_directory_path(fs::path())
 {
 	if (my_argc == c_correct_number_of_args)
 	{
-		m_input_directory_name = *(my_argv + 1);
-		m_o << "Directory = " << m_input_directory_name << std::endl;
+		this->m_input_directory_path = *(my_argv + 1);
+		m_o << "Directory = " << this->m_input_directory_path << std::endl;
 	}
 	else
 	{
 		StandardProgramExecution();
 	}
 
-	AodCompilator my_aod_compilator(m_input_directory_name);
+	AodCompilator my_aod_compilator(m_input_directory_path);
 	my_aod_compilator.CompileTxtFileToBinBuffer();
 
-	string m_output_file_name = CreateOutputFileName( my_aod_compilator.GetParticleVersion() );
+	string m_output_file_path = CreateOutputFileName( my_aod_compilator.GetParticleVersion() );
 
-	my_aod_compilator.SaveOutputFileBufferToBinFile(m_output_file_name);
+	my_aod_compilator.SaveOutputFileBufferToBinFile(m_output_file_path);
 
 	m_o << endl << "-----------------------------------------------------" 
-		<< endl << "The directory named " << m_input_directory_name << " was successfully compiled..." << endl;
+		<< endl << "The directory named " << m_input_directory_path << " was successfully compiled..." << endl;
 }

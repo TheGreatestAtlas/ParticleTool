@@ -2,20 +2,20 @@
 #include "MshCustomBlockVectors.hpp"
 
 IntroductionHeaderClass::IntroductionHeaderClass(ParticleFileVersionInfo arg_prt_file_version_info, 
-											     string arg_extra_data_file_name,
+											     string arg_extra_data_file_path,
 											     ostream& arg_o) :
-	m_prt_file_version_info(arg_prt_file_version_info), m_extra_data_file_name(arg_extra_data_file_name), m_o(arg_o)
+	m_prt_file_version_info(arg_prt_file_version_info), m_extra_data_file_path(arg_extra_data_file_path), m_o(arg_o)
 {
 }
 
 void IntroductionHeaderClass::GetAndWriteToFile(vector<char>& output_file_buff, bool is_child)
 {
-	InputBinFile my_extra_data_file(m_extra_data_file_name, m_o, "binary");
+	InputBinFile my_extra_data_file(m_extra_data_file_path, m_o, "binary");
 	my_extra_data_file.Informations();
 
 	if ((my_extra_data_file.GetIsOpened() == false) && (my_extra_data_file.GetIsOpenNow() == false))
 	{
-		m_o << m_extra_data_file_name
+		m_o << m_extra_data_file_path
 			<< " was not found." << endl 
 			<< "The program will attempt to generate headers and initial mesh data blocks..." 
 			<< std::endl;
@@ -43,7 +43,7 @@ void IntroductionHeaderClass::GetAndWriteToFile(vector<char>& output_file_buff, 
 
 	if ((my_extra_data_file.GetIsOpened() == true) && (my_extra_data_file.GetIsOpenNow() == false))
 	{
-		m_o << m_extra_data_file_name << " was found and opened for compilation." << endl
+		m_o << m_extra_data_file_path << " was found and opened for compilation." << endl
 			<< endl;
 
 		CppCompilator my_extra_data_cpp_compilator(my_extra_data_file.m_file_buffer);

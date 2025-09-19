@@ -22,11 +22,22 @@ void ParticleDecompiler::StandardProgramExecution()
 
 void ParticleDecompiler::ComputeAdditionalInfo()
 {
+    this->m_input_path = this->m_input_name;
+
     //dodatkowe informacje:
-    m_obj_name = m_input_name.substr(0, m_input_name.length() - 4);
-    m_output_name = m_obj_name + "\\" + m_obj_name + my_aod_format;
-    m_bonus_file_name = m_obj_name + "\\" + m_obj_name + bonus_file_rest_name;
+    //m_obj_name = m_input_name.substr(0, m_input_name.length() - 4);
+    this->m_obj_name = this->m_input_path.stem().string();
+
+    this->m_particle_directory_path = this->m_input_path.parent_path() / m_obj_name;
+
+    //m_output_name = m_obj_name + "\\" + m_obj_name + my_aod_format;
+    this->m_output_file_path = (this->m_particle_directory_path / (this->m_obj_name + ::my_aod_format)).string();
+
+    //m_bonus_file_name = m_obj_name + "\\" + m_obj_name + bonus_file_rest_name;
+    this->m_bonus_file_path = (this->m_particle_directory_path / (this->m_obj_name + ::bonus_file_rest_name)).string();
+
     //------------------------------
+
 }
 
 
@@ -146,8 +157,8 @@ ParticleDecompiler::ParticleDecompiler(istream& argin, ostream& argo, int my_arg
     m_o_stream(argo),
 
     m_input_name(string()), 
-    m_output_name(string()), 
-    m_bonus_file_name(string()), 
+    m_output_file_path(string()), 
+    m_bonus_file_path(string()), 
     m_number_of_emiters(0),
     m_number_of_particles(0), 
     m_number_of_pairs(0), 
@@ -155,8 +166,14 @@ ParticleDecompiler::ParticleDecompiler(istream& argin, ostream& argo, int my_arg
     m_offset_in_file(0), 
     m_force_end_format(false), 
     m_my_particle_file_type(not_particle), 
-    m_fourth_byte_of_header(0)
+    m_fourth_byte_of_header(0),
+
+    m_particle_directory_path(fs::path()),
+    m_input_path(fs::path()),
+    m_program_parent_path(fs::path())
 {
+    this->m_program_parent_path = fs::current_path();
+
     InitializeFormatHashMaps();
 
     bool standard_program_exec = false;
@@ -168,17 +185,19 @@ ParticleDecompiler::ParticleDecompiler(istream& argin, ostream& argo, int my_arg
 
     if (my_argc == c_correct_number_of_args)
     {
-        m_input_name = *(my_argv + 1);
+
+        m_input_name = my_argv[1];
         m_o_stream << "File = " << m_input_name << endl;
     }
 
     if (my_argc == c_number_of_args_with_force_format)
     {
-        m_input_name = *(my_argv + 1);
+
+        m_input_name = my_argv[1];
         m_o_stream << "File = " << m_input_name << endl;
 
-        string force_command = *(my_argv + 2);
-        string format = *(my_argv + 3);
+        string force_command = my_argv[2];
+        string format = my_argv[3];
         m_o_stream << "Forced format = " << format << endl;
 
         if (force_command == "--force" || force_command == "-force")
@@ -223,7 +242,7 @@ ParticleDecompiler::ParticleDecompiler(istream& argin, ostream& argo, int my_arg
 
     CheckParticleStatus(m_my_particle_file_type);
 
-    filesystem::create_directory(m_obj_name); // tworze folder na output
+    filesystem::create_directory(this->m_particle_directory_path); // tworze folder na output
     
     ShowInfoAboutParticle(m_my_particle_file_type);
 
@@ -266,7 +285,7 @@ ParticleDecompiler::ParticleDecompiler(istream& argin, ostream& argo, int my_arg
     }
 
 
-    AW::WriteStreamToFile(m_bonus_file_stream, m_bonus_file_name);
+    AW::WriteStreamToFile(m_bonus_file_stream, m_bonus_file_path);
 
     m_o_stream << "The file named " << m_input_name << " has been decompiled!" << endl;
 }
@@ -274,7 +293,9 @@ ParticleDecompiler::ParticleDecompiler(istream& argin, ostream& argo, int my_arg
 
 void ParticleDecompiler::DecompileDynamicParticleToMyAod(InputBinFile& input_file)
 {
-    CfgCompilator dynamic_particle_cfg_file(dynamic_particle_cfg_file_name, m_o_stream);
+    string dynamic_particle_cfg_file_path = (this->m_program_parent_path / dynamic_particle_cfg_file_name).string();
+
+    CfgCompilator dynamic_particle_cfg_file(dynamic_particle_cfg_file_path.c_str(), m_o_stream);
 
     WriteIntroToFile(m_my_particle_file_type); //Wypisujê informacjê wstêpn¹ do pliku wyjœciowego...
 
@@ -294,11 +315,12 @@ void ParticleDecompiler::DecompileDynamicParticleToMyAod(InputBinFile& input_fil
     DynamicParticleClass my_dynamic_particle(temp_cfg_file_data);
 
     //my_dynamic_particle.m_particle_directory_name = m_obj_name + "\\";
-    my_dynamic_particle.SetParticleDirectoryName(m_obj_name + "\\");
+
+    my_dynamic_particle.SetParticleDirectoryPath(this->m_particle_directory_path);
 
     my_dynamic_particle.GetAndSetAndWriteDynamicParticleToAod(input_file.m_file_buffer, m_offset_in_file, m_output_stream, m_obj_name);
 
-    AW::WriteStreamToFile(m_output_stream, m_output_name);
+    AW::WriteStreamToFile(m_output_stream, m_output_file_path);
 
 
 }
@@ -400,7 +422,7 @@ void ParticleDecompiler::DecompileParticleEditFileToMyAod(ParticleFileVersionInf
 
     m_output_stream << "}";
 
-    AW::WriteStreamToFile(m_output_stream, m_output_name);
+    AW::WriteStreamToFile(m_output_stream, m_output_file_path);
 
     
 }

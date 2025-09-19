@@ -217,7 +217,7 @@ void AodUtility::GetTeselateHeader(string& arg_line,
     
     if (arg_line.substr(0, teselate_type_name.length()) == teselate_type_name)
     {
-        const int size_of_c_help = 30;
+        const unsigned int size_of_c_help = 30;
         char c_help[size_of_c_help];
 
         uint32_t m_single_teselate_flag = 0;
@@ -235,10 +235,10 @@ void AodUtility::GetTeselateHeader(string& arg_line,
                  &m_single_teselate_flag,
                  &m_teselate_scalar, 
                  c_help, 
-                 _countof(c_help)
+                 size_of_c_help
                  );
 
-        for (int i = 0; i < _countof(c_help); ++i)
+        for (unsigned int i = 0; i < size_of_c_help; ++i)
         {
             if (c_help[i] == NULL) { break; }
             m_teselate_string += c_help[i];
@@ -301,7 +301,7 @@ void AodUtility::GetCurveHeader(string& arg_line,
     {
 
         DEBUG_PRINT("ITS CURVE HEADER!\n");
-        const int size_of_c_help = 30;
+        const unsigned int size_of_c_help = 30;
         char c_help[size_of_c_help];
 
         float m_curve_scalar = 0.0;
@@ -317,12 +317,12 @@ void AodUtility::GetCurveHeader(string& arg_line,
             &number_of_single_curve_points_checksum,
             &m_curve_scalar,
             c_help,
-            _countof(c_help)
+            size_of_c_help
         );
 
         //printf("number_of_single_curve_points_checksum = %zu\n", number_of_single_curve_points_checksum);
 
-        for (int i = 0; i < _countof(c_help); ++i)
+        for (unsigned int i = 0; i < size_of_c_help; ++i)
         {
             if (c_help[i] == NULL) { break; }
             m_curve_string += c_help[i];

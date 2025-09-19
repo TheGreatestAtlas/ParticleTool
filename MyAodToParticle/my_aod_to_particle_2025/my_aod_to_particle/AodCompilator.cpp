@@ -68,8 +68,8 @@ void AodCompilator::GetDynamicParticleVersion(string& arg_line,
 }
 
 
-AodCompilator::AodCompilator(string arg_input_directory_name, ostream& arg_o) :
-	m_input_directory_name(arg_input_directory_name), m_o(arg_o),
+AodCompilator::AodCompilator(fs::path& arg_input_directory_path, ostream& arg_o) :
+	m_input_directory_path(arg_input_directory_path), m_o(arg_o),
 
 	m_instruction(string()),
 	m_particle_type_version(not_particle),
@@ -78,7 +78,7 @@ AodCompilator::AodCompilator(string arg_input_directory_name, ostream& arg_o) :
 	m_inside_obj_type(string()),
 	m_inside_obj_name(string()),
 	bracket_counter(-1),
-	m_extra_data_file_name(string()),
+	m_extra_data_file_path(string()),
 	m_compilator_flags_cfg_file_path(string()),
 
 	its_pair_particle_emiter(false),
@@ -86,12 +86,14 @@ AodCompilator::AodCompilator(string arg_input_directory_name, ostream& arg_o) :
 {
 	const char compilator_flags_cfg_file_name[] = "__compilator_flags__.cfg";
 
-	string m_input_file_name = m_input_directory_name + "\\" + m_input_directory_name + my_aod_format;
-	m_extra_data_file_name = m_input_file_name.substr(0, m_input_file_name.length() - my_aod_format.length()) + "_extra_data.cpp";
+	string input_directory_name = this->m_input_directory_path.stem().string();
 
-	m_compilator_flags_cfg_file_path = m_input_directory_name + "\\" + compilator_flags_cfg_file_name;
+	string m_input_file_path = (this->m_input_directory_path / (input_directory_name + my_aod_format) ).string();
+	m_extra_data_file_path = (this->m_input_directory_path / (input_directory_name + "_extra_data.cpp") ).string();
 
-	InputBinFile aod_file(m_input_file_name, m_o, "text");
+	m_compilator_flags_cfg_file_path = (this->m_input_directory_path / compilator_flags_cfg_file_name).string();
+
+	InputBinFile aod_file(m_input_file_path, m_o, "text");
 	aod_file.Informations();
 	aod_file.ExitWhenFileDontExist();
 
@@ -217,7 +219,7 @@ void AodCompilator::CompileTxtFileToBinBuffer()
 
 		m_particle_file_version_info = flags_compilator.GetDynamicParticleVersion();
 
-		IntroductionHeaderClass my_dynamic_prt_introduction_header(m_particle_file_version_info, m_extra_data_file_name, m_o);
+		IntroductionHeaderClass my_dynamic_prt_introduction_header(m_particle_file_version_info, m_extra_data_file_path, m_o);
 		my_dynamic_prt_introduction_header.GetAndWriteToFile(s_output_file_buffer);
 
 		CompileDynamicParticle();
@@ -227,7 +229,7 @@ void AodCompilator::CompileTxtFileToBinBuffer()
 
 	if (m_particle_type_version != dynamic_particle)
 	{
-		IntroductionHeaderClass my_introduction_header(m_particle_file_version_info, m_extra_data_file_name, m_o);
+		IntroductionHeaderClass my_introduction_header(m_particle_file_version_info, m_extra_data_file_path, m_o);
 		my_introduction_header.GetAndWriteToFile(s_output_file_buffer);
 
 		m_whole_particle_emiter_container.WriteToFileBuffer(s_output_file_buffer);
@@ -369,7 +371,7 @@ void AodCompilator::CompileDynamicParticle()
 	m_instruction = string();
 
 	m_whole_dynamic_particle_container.m_single_dynamic_particle = 
-	DynamicParticleClass(m_particle_file_version_info, m_input_directory_name, m_clean_file);
+	DynamicParticleClass(m_particle_file_version_info, this->m_input_directory_path, m_clean_file);
 
 	m_whole_dynamic_particle_container.m_single_dynamic_particle.GetFromFile(m_instruction);
 	m_whole_dynamic_particle_container.m_dynamic_particles.push_back( move(m_whole_dynamic_particle_container.m_single_dynamic_particle ) );

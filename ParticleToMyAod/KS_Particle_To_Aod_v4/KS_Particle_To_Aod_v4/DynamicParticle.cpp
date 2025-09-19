@@ -77,20 +77,20 @@ void DynamicParticleClass::InitializeHashMaps()
 DynamicParticleClass::DynamicParticleClass(CfgFileData arg_cfg_file_data) :
     m_dynamic_particle_cfg(arg_cfg_file_data),
 
-    m_particle_directory_name(string())
+    m_particle_directory_path(fs::path())
 {
     InitializeHashMaps();
 }
 
 
-void DynamicParticleClass::SetParticleDirectoryName(string arg_name)
+void DynamicParticleClass::SetParticleDirectoryPath(fs::path& arg_path)
 {
-    m_particle_directory_name = arg_name;
+    m_particle_directory_path = arg_path;
 }
 
 
 
-string DynamicParticleClass::GetParticleDirectoryName() const { return m_particle_directory_name; };
+fs::path DynamicParticleClass::GetParticleDirectoryPath() const { return m_particle_directory_path; };
 
 
 
@@ -112,8 +112,9 @@ void DynamicParticleClass::WriteCompilatorFlagsFile() const
                                                                       input_dynamic_particle_file_version_info .
                                                                       dynamic_particle_version] << ";" << endl << endl;
 
-    AW::WriteStreamToFile(compilator_flags_file_stream, 
-                          m_particle_directory_name + compilator_flags_file_name);
+    string compilator_flags_file_path = (this->m_particle_directory_path / compilator_flags_file_name).string();
+
+    AW::WriteStreamToFile(compilator_flags_file_stream, compilator_flags_file_path);
 
 }
 
@@ -240,7 +241,8 @@ bool DynamicParticleClass::GetData(uint8_t* buffer, size_t& offset, string parti
         }
         custom_children_block.WriteToFile(child_bonus_file_stream);
 
-        AW::WriteStreamToFile(child_bonus_file_stream, m_particle_directory_name + child_name + bonus_file_rest_name);
+        string child_bonus_file_path = (this->m_particle_directory_path / (child_name + bonus_file_rest_name)).string();
+        AW::WriteStreamToFile(child_bonus_file_stream, child_bonus_file_path);
 
 
         DynamicParticleData child;
